@@ -1,0 +1,64 @@
+class MyQueue {
+    int n = 0;
+    int totalLists = 0;
+    LinkedList<Object> headList;
+    LinkedList<Object> tailList;
+    public MyQueue() {
+        this(5);
+    }
+    public MyQueue(int n1) {
+        this.n = n1;
+    }
+
+    void offer(int val){
+        if(headList == null) {
+            headList = new LinkedList<>();
+            tailList = headList;
+            totalLists++;
+        }
+        if(tailList.size() == n - 1) {
+            LinkedList<Object> list = new LinkedList<>();
+            tailList.add(list);
+            tailList = list;
+            totalLists++;
+        }
+        tailList.add(val);
+    }
+    int poll() {
+        if(headList == null) return -1;
+        int val = (Integer)(headList.removeFirst());
+        if(headList != tailList) {
+            if(headList.size() == 1) {
+                headList = (LinkedList<Object>)(headList.get(0));
+                totalLists--;
+            }
+        }
+        if(headList == tailList && headList.size() == 0) {
+            headList = null;
+            tailList = null;
+            totalLists--;
+        }
+        return val;
+    }
+
+    boolean isEmpty() {
+        return headList == null || headList.isEmpty();
+    }
+
+    int getTotalLists() {
+        return totalLists;
+    }
+}
+public class QueueBuildWithFixedArray {
+  public static void main(String[] args) {
+        MyQueue sol = new MyQueue();
+        for(int i = 10; i< 26; ++i) {
+            sol.offer(i);
+            System.out.println("add  i = " + i + ", total lists = " + sol.getTotalLists());
+        }
+        while(!sol.isEmpty()) {
+            System.out.print(sol.poll() + " -> ");
+            System.out.println("total lists = " + sol.getTotalLists());
+        }  
+  }
+}
