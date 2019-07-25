@@ -4,12 +4,12 @@ class FindMedianByBinarySearch {
         int guess = low + (high - low) / 2;
         int cnt = 0;
         int res = 0;
-        boolean start = false;
+        boolean findFirst = false;
         for(int i: nums) {
             if(i <= guess) {
-                if(start == false) {
+                if(findFirst == false) {
                     res = i;
-                    start = true;
+                    findFirst = true;
                 }
                 cnt++;
                 res = Math.max(res, i);
