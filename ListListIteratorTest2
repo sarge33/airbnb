@@ -1,0 +1,143 @@
+package my_test;
+
+import edu.emory.mathcs.backport.java.util.Arrays;
+import org.junit.Test;
+
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import static org.junit.Assert.*;
+
+
+class ListListIterator implements Iterator<Integer> {
+
+    List<List<Integer>> lists;
+    Iterator<List<Integer>> listIterator;
+    Iterator<Integer> iterator;
+
+    public ListListIterator(List<List<Integer>> lists) {
+        this.lists = lists;
+        listIterator = lists.iterator();
+    }
+    @Override
+    public boolean hasNext() {
+        if(listIterator != null) {
+            while (iterator == null || iterator.hasNext() == false) {
+                if (listIterator.hasNext()) {
+                    List<Integer> list = listIterator.next();
+                    iterator = list.iterator();
+                } else {
+                    break;
+                }
+            }
+        }
+        return iterator != null && iterator.hasNext();
+    }
+
+    @Override
+    public Integer next() {
+        if(hasNext()) return iterator.next();
+        return null;
+    }
+
+//    The followings method failed?
+//    @Override
+//    public void remove(){
+//        if(hasNext()) { // because if it doesn't have next, then won't remove current
+//            iterator.remove();
+//        }
+//    }
+    @Override
+    public void remove() {
+//        while (iterator == null && listIterator.hasNext())
+//            iterator = listIterator.next().iterator();
+        if (iterator != null)
+            iterator.remove();
+    }
+}
+
+
+public class ListListIteratorTest2 {
+
+    @Test
+    public void test2() {
+        List<Integer> l1 = new ArrayList<>();
+        Integer[] arr2 = {1, 2, 3};
+        List<Integer> l2 = Arrays.asList(arr2);
+        List<Integer> l3 = new ArrayList<>();
+        Integer[] arr4 = {4, 5};
+        List<Integer> l4 = Arrays.asList(arr4);
+        List<Integer> l5 = new ArrayList<>();
+        List<List<Integer>> lists = new ArrayList<>();
+        lists.add(l1);
+        lists.add(l2);
+        lists.add(l3);
+        lists.add(l4);
+        lists.add(l5);
+
+        ListListIterator iterator = new ListListIterator(lists);
+
+        int i = 0;
+        while(iterator.hasNext()) {
+            int target = iterator.next();
+            System.out.print(target + " ");
+//            if(target == 3 || target== 4) {
+//                iterator.remove();
+//            }
+            i++;
+        }
+        System.out.println();
+    }
+
+    @Test
+    public void test1() {
+        List<List<Integer>> test = new ArrayList<>();
+        test.add(new ArrayList<Integer>() {{
+            add(1);
+            add(2);
+        }});
+        test.add(new ArrayList<Integer>() {{
+            add(3);
+        }});
+        test.add(new ArrayList<Integer>() {{
+            add(4);
+            add(5);
+            add(6);
+        }});
+        ListListIterator sol = new ListListIterator(test);
+        assertTrue(sol.hasNext());
+        assertEquals(1, (int) sol.next());
+        sol.remove();
+        List<Integer> res = new ArrayList<>();
+        while (sol.hasNext()) {
+            res.add(sol.next());
+        }
+        assertEquals(5, res.size());
+        assertEquals(2, (int) res.get(0));
+        assertEquals(4, (int) res.get(2));
+        assertEquals(6, (int) res.get(4));
+
+        test = new ArrayList<>();
+        test.add(new ArrayList<Integer>() {{
+            add(1);
+            add(2);
+        }});
+        test.add(new ArrayList<Integer>() {{
+            add(3);
+        }});
+        sol = new ListListIterator(test);
+        assertTrue(sol.hasNext());
+        assertEquals(1, (int) sol.next());
+        assertTrue(sol.hasNext());
+        assertEquals(2, (int) sol.next());
+        sol.remove();
+        assertTrue(sol.hasNext());
+        assertEquals(3, (int) sol.next());
+
+        sol = new ListListIterator(test);
+        while (sol.hasNext()) {
+            System.out.println(sol.next());
+        }
+    }
+
+}
