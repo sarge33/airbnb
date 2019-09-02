@@ -1,5 +1,3 @@
-package com.sd.test.my_test2;
-
 import org.junit.Test;
 
 import java.util.*;
