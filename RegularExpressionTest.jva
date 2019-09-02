@@ -1,0 +1,59 @@
+import org.junit.Test;
+
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
+class RegularExpression {
+
+    public boolean isMatch2(String s, String p) {
+        if(p.isEmpty()) return s.isEmpty();
+        boolean firstMatch = s.length() > 0 && (s.charAt(0) == p.charAt(0) || p.charAt(0) == '.');
+        if(p.length() > 1 && p.charAt(1) == '*') {
+            return (s.length() > 0 && firstMatch && isMatch(s.substring(1), p)) || isMatch(s, p.substring(2));
+        }
+        if(p.length() > 1 && p.charAt(1) == '+') {
+            return firstMatch && s.length() > 0 && (isMatch(s.substring(1), p) || isMatch(s.substring(1), p.substring(2)));
+        }
+        return firstMatch && isMatch(s.substring(1), p.substring(1));
+    }
+
+    public boolean isMatch(String s, String p) {
+        int m = s.length(), n = p.length();
+        boolean[][] dp = new boolean[m+1][n+1];
+        dp[m][n] = true;
+        for (int i = m; i>=0; --i) { //s
+            for (int j = n-1; j>=0; --j) {
+                boolean firstMatch = i < m && (s.charAt(i) == p.charAt(j) || p.charAt(j) == '.');
+                if(j+1<p.length() && p.charAt(j+1) == '*') {
+                    dp[i][j] = (firstMatch && dp[i+1][j]) || dp[i][j+2];
+                } else if(j+1<p.length() && p.charAt(j+1) == '+') {
+                    dp[i][j] = firstMatch && (dp[i+1][j] || dp[i+1][j+2]);
+                } else {
+                    dp[i][j] = firstMatch && dp[i+1][j+1];
+                }
+            }
+        }
+        return dp[0][0];
+    }
+}
+
+public class RegularExpressionTest {
+    @Test
+    public void test1() {
+        RegularExpression sol = new RegularExpression();
+        assertTrue(sol.isMatch("saaaa", "s+a*"));
+        assertFalse(sol.isMatch("saaaa", "s+b*"));
+        assertFalse(sol.isMatch("saaaab", "s+a*"));
+        assertFalse(sol.isMatch("saaaab", "s+b*"));
+    }
+
+    @Test
+    public void test2() {
+        RegularExpression sol = new RegularExpression();
+        assertTrue(sol.isMatch("saaaa", "s+a*"));
+        assertFalse(sol.isMatch("saaaa", "s+b*"));
+        assertFalse(sol.isMatch("saaaab", "s+a*"));
+        assertFalse(sol.isMatch("saaaab", "s+b*"));
+    }
+
+}
